@@ -1,5 +1,11 @@
 # Documentation
 
+## Set Environments
+
+```bash
+cp .env.example .env
+```
+
 ## Seed Data
 
 ```bash
