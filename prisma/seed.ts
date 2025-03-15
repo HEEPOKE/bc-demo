@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.user.createMany({
+  await prisma.users.createMany({
     data: [
       {
         email: 'admin@example.com',
@@ -18,7 +18,7 @@ async function main() {
     ],
   });
 
-  await prisma.currency.createMany({
+  await prisma.currencies.createMany({
     data: [
       { symbol: 'BTC', name: 'Bitcoin', price: 60000 },
       { symbol: 'ETH', name: 'Ethereum', price: 3500 },

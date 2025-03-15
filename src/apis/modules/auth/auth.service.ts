@@ -18,7 +18,7 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const { email, password } = registerDto;
 
-    const existingUser = await this.prisma.user.findUnique({
+    const existingUser = await this.prisma.users.findUnique({
       where: { email },
     });
     if (existingUser) {
@@ -27,7 +27,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await this.prisma.user.create({
+    const user = await this.prisma.users.create({
       data: {
         email,
         password: hashedPassword,
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.users.findUnique({ where: { email } });
 
     if (!user) {
       throw new BadRequestException('Invalid email or password');

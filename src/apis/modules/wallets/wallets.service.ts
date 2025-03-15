@@ -6,6 +6,6 @@ export class WalletsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByUser(userId: string) {
-    return this.prisma.wallet.findMany({ where: { userId } });
+    return this.prisma.wallets.findMany({ where: { userId } });
   }
 }

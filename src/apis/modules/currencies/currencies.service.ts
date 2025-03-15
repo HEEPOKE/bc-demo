@@ -17,20 +17,24 @@ export class CurrenciesService {
     const cachedData = await this.redisService.getCache(this.cacheKey);
     if (cachedData) return cachedData;
 
-    const currencies = await this.prisma.currency.findMany();
+    const currencies = await this.prisma.currencies.findMany();
 
-    await this.redisService.setCache(this.cacheKey, currencies, 3600);
+    await this.redisService.setCache(
+      this.cacheKey,
+      JSON.stringify(currencies),
+      3600,
+    );
 
     return currencies;
   }
 
   async getCurrencyById(id: string) {
-    const currency = await this.prisma.currency.findUnique({ where: { id } });
+    const currency = await this.prisma.currencies.findUnique({ where: { id } });
     return currency;
   }
 
   async createCurrency(data: CreateCurrencyDto) {
-    const newCurrency = await this.prisma.currency.create({ data });
+    const newCurrency = await this.prisma.currencies.create({ data });
 
     await this.redisService.deleteCache(this.cacheKey);
 
@@ -38,7 +42,7 @@ export class CurrenciesService {
   }
 
   async updateCurrency(id: string, data: UpdateCurrencyDto) {
-    const updatedCurrency = await this.prisma.currency.update({
+    const updatedCurrency = await this.prisma.currencies.update({
       where: { id },
       data,
     });
@@ -49,7 +53,7 @@ export class CurrenciesService {
   }
 
   async deleteCurrency(id: string) {
-    await this.prisma.currency.delete({ where: { id } });
+    await this.prisma.currencies.delete({ where: { id } });
 
     await this.redisService.deleteCache(this.cacheKey);
   }

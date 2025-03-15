@@ -11,13 +11,13 @@ export class TransactionsService {
   ) {}
 
   async createTransaction(walletId: string, amount: number, type: string) {
-    const transaction = await this.prisma.transaction.create({
+    const transaction = await this.prisma.transactions.create({
       data: { walletId, amount, type, price: 50000.0 },
     });
 
     await this.redisService.setCache(
       `transaction:${transaction.id}`,
-      transaction,
+      JSON.stringify(transaction),
     );
 
     return transaction;
@@ -29,14 +29,14 @@ export class TransactionsService {
     );
     if (cached) return cached;
 
-    const transaction = await this.prisma.transaction.findUnique({
+    const transaction = await this.prisma.transactions.findUnique({
       where: { id: transactionId },
     });
 
     if (transaction) {
       await this.redisService.setCache(
         `transaction:${transactionId}`,
-        transaction,
+        JSON.stringify(transaction),
       );
     }
 
@@ -46,10 +46,10 @@ export class TransactionsService {
   async transferFunds(dto: TransferDto) {
     const { fromWalletId, toWalletId, amount } = dto;
 
-    const fromWallet = await this.prisma.wallet.findUnique({
+    const fromWallet = await this.prisma.wallets.findUnique({
       where: { id: fromWalletId },
     });
-    const toWallet = await this.prisma.wallet.findUnique({
+    const toWallet = await this.prisma.wallets.findUnique({
       where: { id: toWalletId },
     });
 
@@ -61,17 +61,17 @@ export class TransactionsService {
       throw new BadRequestException('Insufficient funds');
     }
 
-    await this.prisma.wallet.update({
+    await this.prisma.wallets.update({
       where: { id: fromWalletId },
       data: { balance: fromWallet.balance - amount },
     });
 
-    await this.prisma.wallet.update({
+    await this.prisma.wallets.update({
       where: { id: toWalletId },
       data: { balance: toWallet.balance + amount },
     });
 
-    const transaction = await this.prisma.transaction.create({
+    const transaction = await this.prisma.transactions.create({
       data: {
         walletId: fromWalletId,
         amount,
