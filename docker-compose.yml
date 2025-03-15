@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  bc-db:
+    image: postgres:latest
+    container_name: bc-db
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+  redis:
+    image: redis:latest
+    container_name: nest-drizzle-redis
+    hostname: redis
+    env_file:
+      - .env
+    command:
+      [
+        'redis-server',
+        '--include',
+        '/usr/local/etc/redis/redis.conf',
+        '--appendonly',
+        'yes',
+        '--requirepass',
+        '${REDIS_PASSWORD}',
+      ]
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    environment:
+      REDIS_REPLICATION_MODE: ${REDIS_REPLICATION_MODE}
+      REDIS_PASSWORD:

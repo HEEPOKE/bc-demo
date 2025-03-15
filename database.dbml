@@ -1,0 +1,45 @@
+Table Users {
+  id        uuid   [primary key]
+  email     varchar [unique, not null]
+  password  varchar [not null]
+  balance   float   [default: 0.0]
+  createdAt timestamp 
+  updatedAt timestamp
+}
+
+Table Wallets {
+  id        uuid   [primary key]
+  userId    uuid   [not null]
+  currency  varchar [not null]
+  balance   float  [default: 0.0]
+  createdAt timestamp 
+
+  Indexes {
+    (userId)
+  }
+}
+
+Table Transactions {
+  id        uuid   [primary key]
+  walletId  uuid   [not null]
+  type      varchar [not null]
+  amount    float   [not null]
+  price     float
+  createdAt timestamp 
+
+  Indexes {
+    (walletId)
+  }
+}
+
+Table Currencies {
+  id        uuid   [primary key]
+  symbol    varchar [unique, not null]
+  name      varchar [not null]
+  price     float   [not null]
+  createdAt timestamp 
+  updatedAt timestamp
+}
+
+Ref: Wallets.userId > Users.id
+Ref: Transactions.walletId > Wallets.id
